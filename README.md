@@ -1,1 +1,1 @@
-[![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-24ddc0f5d75046c5622901739e7c5dd533143b0c8e959d652212380cedb1ea36.svg)](https://classroom.github.com/a/UQL1B0Jv)
+![2023-09-23 16-44-32](https://github.com/cg20231c/assignment-1-webgl-2d-MyNameIsSyukra/assets/90988646/88579467-3e35-48b3-9947-04a19d3bca03)
