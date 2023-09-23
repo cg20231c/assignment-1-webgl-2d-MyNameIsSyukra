@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebGL Circle</title>
+</head>
+<body>
+    <canvas id="glCanvas" width="1920" height="1080"></canvas>
+    <script>
+        // Step 1: Set up the canvas
+        const canvas = document.getElementById('glCanvas');
+
+        // Step 2: Initialize WebGL context
+        const gl = canvas.getContext('webgl');
+
+        // Step 3: Compile shaders
+        const vertexShaderSource = `
+            // Vertex shader code (GLSL)
+            attribute vec2 a_position;
+            void main() {
+                // Transform vertex position
+                gl_Position = vec4(a_position, 0.0, 1.0);
+            }
+        `;
+
+        const fragmentShaderSource = `
+            // Fragment shader code (GLSL)
+            precision mediump float;
+            uniform vec4 uColor;
+            void main() {
+                // Set fragment color
+                gl_FragColor = uColor;    // FUCHSIA
+            }
+        `;
+
+        const vertexShader = gl.createShader(gl.VERTEX_SHADER);
+        gl.shaderSource(vertexShader, vertexShaderSource);
+        gl.compileShader(vertexShader);
+
+        const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
+        gl.shaderSource(fragmentShader, fragmentShaderSource);
+        gl.compileShader(fragmentShader);
+
+        // Step 4: Create and link program
+        const program = gl.createProgram();
+        gl.attachShader(program, vertexShader);
+        gl.attachShader(program, fragmentShader);
+        gl.linkProgram(program);
+        gl.useProgram(program);
+
+        // Step 5: Set up attributes and uniforms
+        const positionAttributeLocation = gl.getAttribLocation(program, 'a_position');
+        const positionBuffer = gl.createBuffer();
+
+        // Create vertices_line for an approximate circle
+        const vertices_line = new Float32Array([
+            //Letter S
+            -0.4,0.3,
+            -0.4,0.1,
+
+            -0.2,0.3,
+            -0.4,0.3,
+
+            -0.4,0.1,
+            -0.2,0.1,
+
+            -0.2,0.1,
+            -0.2,-0.1,
+
+            -0.2,-0.1,
+            -0.4,-0.1,
+            
+            //Letter Y
+            -0.1,0.3,
+            -0,0.115,
+
+            0.1,0.3,
+            0,0.115,
+
+            0,0.115,
+            0,-0.1,
+
+            //letter U
+            0.2,0.3,
+            0.2,-0.1,
+
+            0.2,-0.1,
+            0.4,-0.1,
+
+            0.4,-0.1,
+            0.4,0.3,
+        ]);
+
+        const vertices_triangle = new Float32Array([
+            //Letter S
+            -0.4,0.3,
+            -0.2,0.3,
+            -0.2,0.31,
+
+            -0.4,0.3,
+            -0.4,0.31,
+            -0.2,0.31,
+
+            -0.4,0.31,
+            -0.41,0.1,
+            -0.40,0.1,
+
+            -0.4,0.31,
+            -0.41,0.1,
+            -0.41,0.31,
+
+            -0.41,0.1,
+            -0.2,0.1,
+            -0.2,0.09,
+
+            -0.41,0.1,
+            -0.41,0.09,
+            -0.2,0.09,
+
+            -0.2,0.1,
+            -0.2,-0.1,
+            -0.21,-0.1,
+
+            -0.2,0.1,
+            -0.21,0.1,
+            -0.21,-0.1,
+
+            -0.2,-0.1,
+            -0.4,-0.1,
+            -0.4,-0.11,
+
+            -0.2,-0.1,
+            -0.2,-0.11,
+            -0.4,-0.11,
+            ///Letter Y
+            -0.1,0.3,
+            -0,0.1,
+            -0,0.11,
+            
+            -0.1,0.3,
+            -0.09,0.3,
+            -0,0.11,
+
+            0.1,0.3,
+            0,0.1,
+            0,0.11,
+        
+            0.1,0.3,
+            0.09,0.3,
+            0,0.11,
+
+            0.005,0.11,
+            0.005,-0.1,
+            -0.005,-0.1,
+
+            0.005,0.11,
+            -0.005,0.11,
+            -0.005,-0.1,
+
+            //letter U
+            0.2,0.3,
+            0.2,-0.1,
+            0.21,-0.1,
+
+            0.2,0.3,
+            0.21,0.3,
+            0.21,-0.1,
+
+            0.2,-0.1,
+            0.2,-0.11,
+            0.4,-0.1,
+
+            0.2,-0.11,
+            0.4,-0.11,
+            0.4,-0.1,
+
+            0.39,-0.1,
+            0.39,0.3,
+            0.4,0.3,
+
+            0.39,-0.1,
+            0.4,-0.1,
+            0.4,0.3,
+        ]);
+        
+        // let toggle = true;
+        // function toggle() {
+        //     if (toggle == true){
+        //         gl.clearColor(0.0, 0.0, 0.0, 1.0);
+        //         gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+        //         gl.bufferData(gl.ARRAY_BUFFER, vertices_line, gl.STATIC_DRAW);
+        //         gl.enableVertexAttribArray(positionAttributeLocation);
+        //         gl.vertexAttribPointer(positionAttributeLocation, 2, gl.FLOAT, false, 0, 0);
+        //         gl.clear(gl.COLOR_BUFFER_BIT);
+        //         // Draw the circle using gl.drawArrays
+        //         gl.drawArrays(gl.LINES, 0, 100);
+        //         // Step 7: Rendering loop
+                
+        //     }
+        //     else {
+        //         gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+        //         gl.clearColor(0.0, 0.0, 0.0, 1.0);
+        //         gl.bufferData(gl.ARRAY_BUFFER, vertices_triangle, gl.STATIC_DRAW);
+        //         gl.enableVertexAttribArray(positionAttributeLocation);
+        //         gl.vertexAttribPointer(positionAttributeLocation, 2, gl.FLOAT, false, 0, 0);
+        //         gl.clear(gl.COLOR_BUFFER_BIT);
+        //         // Draw the circle using gl.drawArrays
+        //         gl.drawArrays(gl.TRIANGLES, 0, 100);
+        //         // Step 7: Rendering loop
+               
+        //     }
+
+        //     toggle = !toggle;
+        //     setTimeout(toggle, 3000);
+        // }
+        // // Step 6: Create and bind buffers
+        // toggle();
+        let toggle = true;
+
+        
+        function render() {
+            // Clear canvas
+            
+            if(toggle==true){gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+                gl.bufferData(gl.ARRAY_BUFFER, vertices_line, gl.STATIC_DRAW);
+                gl.enableVertexAttribArray(positionAttributeLocation);
+                gl.vertexAttribPointer(positionAttributeLocation, 2, gl.FLOAT, false, 0, 0);
+        
+                const colorUniformLocation = gl.getUniformLocation(program, 'uColor');
+                gl.uniform4f(colorUniformLocation, 0.466, 0.533, 0.4, 1.0); // Sage
+                // Step 7: Rendering loop
+                gl.clearColor(0.0, 0.0, 0.0, 1.0);
+                gl.clear(gl.COLOR_BUFFER_BIT);
+
+                // Draw the circle using gl.drawArrays
+                gl.drawArrays(gl.LINES, 0, 22);
+
+            }
+            else{
+                gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+                gl.bufferData(gl.ARRAY_BUFFER, vertices_triangle, gl.STATIC_DRAW);
+                gl.enableVertexAttribArray(positionAttributeLocation);
+                gl.vertexAttribPointer(positionAttributeLocation, 2, gl.FLOAT, false, 0, 0);
+                
+                const colorUniformLocation = gl.getUniformLocation(program, 'uColor');
+                gl.uniform4f(colorUniformLocation, 0.0, 0.0, 0.5, 1.0); // Sage
+                
+                // Step 7: Rendering loop
+                gl.clearColor(0.466, 0.533, 0.4, 1.0);
+                gl.clear(gl.COLOR_BUFFER_BIT);
+    
+                // Draw the circle using gl.drawArrays
+                gl.drawArrays(gl.TRIANGLES, 0, 66);
+            }   
+            setTimeout(render,3000)
+            toggle = !toggle;
+        }
+        render();
+    </script>
+</body>
+</html>
